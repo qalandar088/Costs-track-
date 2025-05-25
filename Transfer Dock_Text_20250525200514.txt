@@ -1,0 +1,1549 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💰 Daily Expense Tracker</title>
+    <style>
+        :root {
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --accent: #ff7e5f;
+            --light: #f8f9fa;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            padding: 10px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1, h2, h3 {
+            color: var(--primary);
+            text-align: center;
+        }
+        
+        h1 {
+            margin: 10px 0 20px;
+            font-size: 1.8rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        button {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(to right, var(--danger), #ff6b6b);
+        }
+        
+        .btn-success {
+            background: linear-gradient(to right, var(--success), #1dd1a1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .total {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 20px 0;
+            text-align: right;
+            color: var(--primary);
+        }
+        
+        .tabs {
+            display: flex;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+        }
+        
+        .tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-weight: 600;
+            color: #777;
+            white-space: nowrap;
+            transition: color 0.3s;
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .invoice {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+        }
+        
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .invoice-table {
+            margin: 15px 0;
+            width: 100%;
+        }
+        
+        .print-btn {
+            display: block;
+            margin: 20px auto;
+            max-width: 200px;
+        }
+        
+        @media (max-width: 600px) {
+            th, td {
+                padding: 8px;
+                font-size: 13px;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Swipe animation for mobile tabs */
+        .tab-content {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💰 Daily Expense Tracker</h1>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="openTab('add')">➕ Add</div>
+            <div class="tab" onclick="openTab('view')">📋 View</div>
+            <div class="tab" onclick="openTab('invoice')">🧾 Invoice</div>
+        </div>
+        
+        <!-- ADD EXPENSE TAB -->
+        <div id="add" class="tab-content active">
+            <div class="form-group">
+                <label for="date">📅 Date</label>
+                <input type="date" id="date" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="amount">💵 Amount (₹)</label>
+                <input type="number" id="amount" step="0.01" placeholder="e.g., 250.50" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="category">🗂️ Category</label>
+                <select id="category" required>
+                    <option value="">-- Select --</option>
+                    <option value="🍔 Food">🍔 Food</option>
+                    <option value="🚗 Transport">🚗 Transport</option>
+                    <option value="🛍️ Shopping">🛍️ Shopping</option>
+                    <option value="💡 Bills">💡 Bills</option>
+                    <option value="🎬 Entertainment">🎬 Entertainment</option>
+                    <option value="🏠 Home">🏠 Home</option>
+                    <option value="💊 Health">💊 Health</option>
+                    <option value="✈️ Travel">✈️ Travel</option>
+                    <option value="📱 Mobile">📱 Mobile</option>
+                    <option value="🎁 Gifts">🎁 Gifts</option>
+                    <option value="📚 Education">📚 Education</option>
+                    <option value="🔧 Other">🔧 Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">📝 Description</label>
+                <input type="text" id="description" placeholder="e.g., Dinner at Restaurant">
+            </div>
+            
+            <button onclick="addExpense()">💾 Save Expense</button>
+        </div>
+        
+        <!-- VIEW EXPENSES TAB -->
+        <div id="view" class="tab-content">
+            <div class="form-group">
+                <label for="filter-month">🗓️ Filter by Month</label>
+                <input type="month" id="filter-month" onchange="filterExpenses()">
+            </div>
+            
+            <table id="expenses-table">
+                <thead>
+                    <tr>
+                        <th>📅 Date</th>
+                        <th>💵 Amount</th>
+                        <th>🗂️ Category</th>
+                        <th>📝 Description</th>
+                        <th>❌ Action</th>
+                    </tr>
+                </thead>
+                <tbody id="expenses-list">
+                    <!-- Expenses will load here -->
+                </tbody>
+            </table>
+            
+            <div class="total">
+                🏦 Total: ₹<span id="total-amount">0.00</span>
+            </div>
+        </div>
+        
+        <!-- INVOICE TAB -->
+        <div id="invoice" class="tab-content">
+            <div class="form-group">
+                <label for="invoice-month">📅 Select Month</label>
+                <input type="month" id="invoice-month" required>
+                <button onclick="generateInvoice()">🖨️ Generate Invoice</button>
+            </div>
+            
+            <div id="invoice-preview" class="invoice" style="display: none;">
+                <div class="invoice-header">
+                    <h2>📑 Expense Invoice</h2>
+                    <h3 id="invoice-month-title">January 2023</h3>
+                </div>
+                
+                <table class="invoice-table">
+                    <thead>
+                        <tr>
+                            <th>📅 Date</th>
+                            <th>📝 Description</th>
+                            <th>🗂️ Category</th>
+                            <th>💵 Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoice-items">
+                        <!-- Invoice items will load here -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3" style="text-align: right;">Total:</th>
+                            <th id="invoice-total">₹0.00</th>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+                <button class="print-btn" onclick="window.print()">🖨️ Print Invoice</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ✅ Initialize expenses from localStorage (FIXED BUG)
+        let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+        
+        // Set default date to today
+        document.getElementById('date').valueAsDate = new Date();
+        
+        // 🟢 ADD EXPENSE FUNCTION
+        function addExpense() {
+            const date = document.getElementById('date').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const category = document.getElementById('category').value;
+            const description = document.getElementById('description').value;
+            
+            if (!date || isNaN(amount) || !category) {
+                alert('⚠️ Please fill all required fields!');
+                return;
+            }
+            
+            const expense = {
+                id: Date.now(), // Unique ID
+                date: date,
+                amount: amount,
+                category: category,
+                description: description
+            };
+            
+            expenses.push(expense);
+            saveExpenses();
+            renderExpenses();
+            
+            // Reset form
+            document.getElementById('amount').value = '';
+            document.getElementById('category').value = '';
+            document.getElementById('description').value = '';
+            
+            // Show success message
+            alert('✅ Expense saved successfully!');
+        }
+        
+        // 💾 SAVE TO LOCALSTORAGE (FIXED BUG)
+        function saveExpenses() {
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+        }
+        
+        // 📜 RENDER EXPENSES IN TABLE
+        function renderExpenses(filteredExpenses = null) {
+            const expensesToRender = filteredExpenses || expenses;
+            const expensesList = document.getElementById('expenses-list');
+            expensesList.innerHTML = '';
+            
+            let total = 0;
+            
+            if (expensesToRender.length === 0) {
+                expensesList.innerHTML = `<tr><td colspan="5" style="text-align: center;">No expenses found</td></tr>`;
+            } else {
+                expensesToRender.forEach(expense => {
+                    total += expense.amount;
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${formatDate(expense.date)}</td>
+                        <td>₹${expense.amount.toFixed(2)}</td>
+                        <td>${expense.category}</td>
+                        <td>${expense.description || '-'}</td>
+                        <td>
+                            <button onclick="deleteExpense(${expense.id})" class="btn-danger">❌ Delete</button>
+                        </td>
+                    `;
+                    expensesList.appendChild(row);
+                });
+            }
+            
+            document.getElementById('total-amount').textContent = total.toFixed(2);
+        }
+        
+        // ❌ DELETE EXPENSE
+        function deleteExpense(id) {
+            if (confirm('⚠️ Delete this expense?')) {
+                expenses = expenses.filter(expense => expense.id !== id);
+                saveExpenses();
+                renderExpenses();
+                alert('🗑️ Expense deleted!');
+            }
+        }
+        
+        // 🔍 FILTER EXPENSES BY MONTH
+        function filterExpenses() {
+            const month = document.getElementById('filter-month').value;
+            if (!month) {
+                renderExpenses();
+                return;
+            }
+            
+            const filteredExpenses = expenses.filter(expense => {
+                return expense.date.startsWith(month);
+            });
+            
+            renderExpenses(filteredExpenses);
+        }
+        
+        // 🧾 GENERATE INVOICE (FIXED BUG)
+        function generateInvoice() {
+            const month = document.getElementById('invoice-month').value;
+            if (!month) {
+                alert('⚠️ Please select a month!');
+                return;
+            }
+            
+            const filteredExpenses = expenses.filter(expense => {
+                return expense.date.startsWith(month);
+            });
+            
+            if (filteredExpenses.length === 0) {
+                alert('⚠️ No expenses found for this month!');
+                return;
+            }
+            
+            const invoiceItems = document.getElementById('invoice-items');
+            invoiceItems.innerHTML = '';
+            
+            let total = 0;
+            
+            filteredExpenses.forEach(expense => {
+                total += expense.amount;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${formatDate(expense.date)}</td>
+                    <td>${expense.description || '-'}</td>
+                    <td>${expense.category}</td>
+                    <td>₹${expense.amount.toFixed(2)}</td>
+                `;
+                invoiceItems.appendChild(row);
+            });
+            
+            document.getElementById('invoice-total').textContent = `₹${total.toFixed(2)}`;
+            
+            // Set invoice title (e.g., "January 2023")
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+                               'August', 'September', 'October', 'November', 'December'];
+            const year = month.substring(0, 4);
+            const monthNum = parseInt(month.substring(5, 7)) - 1;
+            document.getElementById('invoice-month-title').textContent = `${monthNames[monthNum]} ${year}`;
+            
+            // Show invoice preview
+            document.getElementById('invoice-preview').style.display = 'block';
+        }
+        
+        // 📅 FORMAT DATE (e.g., "20 Jan 2023")
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('en-IN', options);
+        }
+        
+        // 🔄 SWITCH TABS
+        function openTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            // If "View Expenses" tab is opened, render them
+            if (tabName === 'view') {
+                renderExpenses();
+            }
+        }
+        
+        // 🚀 INITIAL LOAD
+        renderExpenses();
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💰 Daily Expense Tracker</title>
+    <style>
+        :root {
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --accent: #ff7e5f;
+            --light: #f8f9fa;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            padding: 10px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1, h2, h3 {
+            color: var(--primary);
+            text-align: center;
+        }
+        
+        h1 {
+            margin: 10px 0 20px;
+            font-size: 1.8rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        button {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(to right, var(--danger), #ff6b6b);
+        }
+        
+        .btn-success {
+            background: linear-gradient(to right, var(--success), #1dd1a1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .total {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 20px 0;
+            text-align: right;
+            color: var(--primary);
+        }
+        
+        .tabs {
+            display: flex;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+        }
+        
+        .tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-weight: 600;
+            color: #777;
+            white-space: nowrap;
+            transition: color 0.3s;
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .invoice {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+        }
+        
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .invoice-table {
+            margin: 15px 0;
+            width: 100%;
+        }
+        
+        .print-btn {
+            display: block;
+            margin: 20px auto;
+            max-width: 200px;
+        }
+        
+        @media (max-width: 600px) {
+            th, td {
+                padding: 8px;
+                font-size: 13px;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Swipe animation for mobile tabs */
+        .tab-content {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💰 Daily Expense Tracker</h1>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="openTab('add')">➕ Add</div>
+            <div class="tab" onclick="openTab('view')">📋 View</div>
+            <div class="tab" onclick="openTab('invoice')">🧾 Invoice</div>
+        </div>
+        
+        <!-- ADD EXPENSE TAB -->
+        <div id="add" class="tab-content active">
+            <div class="form-group">
+                <label for="date">📅 Date</label>
+                <input type="date" id="date" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="amount">💵 Amount (₹)</label>
+                <input type="number" id="amount" step="0.01" placeholder="e.g., 250.50" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="category">🗂️ Category</label>
+                <select id="category" required>
+                    <option value="">-- Select --</option>
+                    <option value="🍔 Food">🍔 Food</option>
+                    <option value="🚗 Transport">🚗 Transport</option>
+                    <option value="🛍️ Shopping">🛍️ Shopping</option>
+                    <option value="💡 Bills">💡 Bills</option>
+                    <option value="🎬 Entertainment">🎬 Entertainment</option>
+                    <option value="🏠 Home">🏠 Home</option>
+                    <option value="💊 Health">💊 Health</option>
+                    <option value="✈️ Travel">✈️ Travel</option>
+                    <option value="📱 Mobile">📱 Mobile</option>
+                    <option value="🎁 Gifts">🎁 Gifts</option>
+                    <option value="📚 Education">📚 Education</option>
+                    <option value="🔧 Other">🔧 Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">📝 Description</label>
+                <input type="text" id="description" placeholder="e.g., Dinner at Restaurant">
+            </div>
+            
+            <button onclick="addExpense()">💾 Save Expense</button>
+        </div>
+        
+        <!-- VIEW EXPENSES TAB -->
+        <div id="view" class="tab-content">
+            <div class="form-group">
+                <label for="filter-month">🗓️ Filter by Month</label>
+                <input type="month" id="filter-month" onchange="filterExpenses()">
+            </div>
+            
+            <table id="expenses-table">
+                <thead>
+                    <tr>
+                        <th>📅 Date</th>
+                        <th>💵 Amount</th>
+                        <th>🗂️ Category</th>
+                        <th>📝 Description</th>
+                        <th>❌ Action</th>
+                    </tr>
+                </thead>
+                <tbody id="expenses-list">
+                    <!-- Expenses will load here -->
+                </tbody>
+            </table>
+            
+            <div class="total">
+                🏦 Total: ₹<span id="total-amount">0.00</span>
+            </div>
+        </div>
+        
+        <!-- INVOICE TAB -->
+        <div id="invoice" class="tab-content">
+            <div class="form-group">
+                <label for="invoice-month">📅 Select Month</label>
+                <input type="month" id="invoice-month" required>
+                <button onclick="generateInvoice()">🖨️ Generate Invoice</button>
+            </div>
+            
+            <div id="invoice-preview" class="invoice" style="display: none;">
+                <div class="invoice-header">
+                    <h2>📑 Expense Invoice</h2>
+                    <h3 id="invoice-month-title">January 2023</h3>
+                </div>
+                
+                <table class="invoice-table">
+                    <thead>
+                        <tr>
+                            <th>📅 Date</th>
+                            <th>📝 Description</th>
+                            <th>🗂️ Category</th>
+                            <th>💵 Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoice-items">
+                        <!-- Invoice items will load here -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3" style="text-align: right;">Total:</th>
+                            <th id="invoice-total">₹0.00</th>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+                <button class="print-btn" onclick="window.print()">🖨️ Print Invoice</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ✅ Initialize expenses from localStorage (FIXED BUG)
+        let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+        
+        // Set default date to today
+        document.getElementById('date').valueAsDate = new Date();
+        
+        // 🟢 ADD EXPENSE FUNCTION
+        function addExpense() {
+            const date = document.getElementById('date').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const category = document.getElementById('category').value;
+            const description = document.getElementById('description').value;
+            
+            if (!date || isNaN(amount) || !category) {
+                alert('⚠️ Please fill all required fields!');
+                return;
+            }
+            
+            const expense = {
+                id: Date.now(), // Unique ID
+                date: date,
+                amount: amount,
+                category: category,
+                description: description
+            };
+            
+            expenses.push(expense);
+            saveExpenses();
+            renderExpenses();
+            
+            // Reset form
+            document.getElementById('amount').value = '';
+            document.getElementById('category').value = '';
+            document.getElementById('description').value = '';
+            
+            // Show success message
+            alert('✅ Expense saved successfully!');
+        }
+        
+        // 💾 SAVE TO LOCALSTORAGE (FIXED BUG)
+        function saveExpenses() {
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+        }
+        
+        // 📜 RENDER EXPENSES IN TABLE
+        function renderExpenses(filteredExpenses = null) {
+            const expensesToRender = filteredExpenses || expenses;
+            const expensesList = document.getElementById('expenses-list');
+            expensesList.innerHTML = '';
+            
+            let total = 0;
+            
+            if (expensesToRender.length === 0) {
+                expensesList.innerHTML = `<tr><td colspan="5" style="text-align: center;">No expenses found</td></tr>`;
+            } else {
+                expensesToRender.forEach(expense => {
+                    total += expense.amount;
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${formatDate(expense.date)}</td>
+                        <td>₹${expense.amount.toFixed(2)}</td>
+                        <td>${expense.category}</td>
+                        <td>${expense.description || '-'}</td>
+                        <td>
+                            <button onclick="deleteExpense(${expense.id})" class="btn-danger">❌ Delete</button>
+                        </td>
+                    `;
+                    expensesList.appendChild(row);
+                });
+            }
+            
+            document.getElementById('total-amount').textContent = total.toFixed(2);
+        }
+        
+        // ❌ DELETE EXPENSE
+        function deleteExpense(id) {
+            if (confirm('⚠️ Delete this expense?')) {
+                expenses = expenses.filter(expense => expense.id !== id);
+                saveExpenses();
+                renderExpenses();
+                alert('🗑️ Expense deleted!');
+            }
+        }
+        
+        // 🔍 FILTER EXPENSES BY MONTH
+        function filterExpenses() {
+            const month = document.getElementById('filter-month').value;
+            if (!month) {
+                renderExpenses();
+                return;
+            }
+            
+            const filteredExpenses = expenses.filter(expense => {
+                return expense.date.startsWith(month);
+            });
+            
+            renderExpenses(filteredExpenses);
+        }
+        
+        // 🧾 GENERATE INVOICE (FIXED BUG)
+        function generateInvoice() {
+            const month = document.getElementById('invoice-month').value;
+            if (!month) {
+                alert('⚠️ Please select a month!');
+                return;
+            }
+            
+            const filteredExpenses = expenses.filter(expense => {
+                return expense.date.startsWith(month);
+            });
+            
+            if (filteredExpenses.length === 0) {
+                alert('⚠️ No expenses found for this month!');
+                return;
+            }
+            
+            const invoiceItems = document.getElementById('invoice-items');
+            invoiceItems.innerHTML = '';
+            
+            let total = 0;
+            
+            filteredExpenses.forEach(expense => {
+                total += expense.amount;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${formatDate(expense.date)}</td>
+                    <td>${expense.description || '-'}</td>
+                    <td>${expense.category}</td>
+                    <td>₹${expense.amount.toFixed(2)}</td>
+                `;
+                invoiceItems.appendChild(row);
+            });
+            
+            document.getElementById('invoice-total').textContent = `₹${total.toFixed(2)}`;
+            
+            // Set invoice title (e.g., "January 2023")
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+                               'August', 'September', 'October', 'November', 'December'];
+            const year = month.substring(0, 4);
+            const monthNum = parseInt(month.substring(5, 7)) - 1;
+            document.getElementById('invoice-month-title').textContent = `${monthNames[monthNum]} ${year}`;
+            
+            // Show invoice preview
+            document.getElementById('invoice-preview').style.display = 'block';
+        }
+        
+        // 📅 FORMAT DATE (e.g., "20 Jan 2023")
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('en-IN', options);
+        }
+        
+        // 🔄 SWITCH TABS
+        function openTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            // If "View Expenses" tab is opened, render them
+            if (tabName === 'view') {
+                renderExpenses();
+            }
+        }
+        
+        // 🚀 INITIAL LOAD
+        renderExpenses();
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💰 Daily Expense Tracker</title>
+    <style>
+        :root {
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --accent: #ff7e5f;
+            --light: #f8f9fa;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            padding: 10px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1, h2, h3 {
+            color: var(--primary);
+            text-align: center;
+        }
+        
+        h1 {
+            margin: 10px 0 20px;
+            font-size: 1.8rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        button {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(to right, var(--danger), #ff6b6b);
+        }
+        
+        .btn-success {
+            background: linear-gradient(to right, var(--success), #1dd1a1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .total {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 20px 0;
+            text-align: right;
+            color: var(--primary);
+        }
+        
+        .tabs {
+            display: flex;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+        }
+        
+        .tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-weight: 600;
+            color: #777;
+            white-space: nowrap;
+            transition: color 0.3s;
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .invoice {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+        }
+        
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .invoice-table {
+            margin: 15px 0;
+            width: 100%;
+        }
+        
+        .print-btn {
+            display: block;
+            margin: 20px auto;
+            max-width: 200px;
+        }
+        
+        @media (max-width: 600px) {
+            th, td {
+                padding: 8px;
+                font-size: 13px;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Swipe animation for mobile tabs */
+        .tab-content {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💰 Daily Expense Tracker</h1>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="openTab('add')">➕ Add</div>
+            <div class="tab" onclick="openTab('view')">📋 View</div>
+            <div class="tab" onclick="openTab('invoice')">🧾 Invoice</div>
+        </div>
+        
+        <!-- ADD EXPENSE TAB -->
+        <div id="add" class="tab-content active">
+            <div class="form-group">
+                <label for="date">📅 Date</label>
+                <input type="date" id="date" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="amount">💵 Amount (₹)</label>
+                <input type="number" id="amount" step="0.01" placeholder="e.g., 250.50" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="category">🗂️ Category</label>
+                <select id="category" required>
+                    <option value="">-- Select --</option>
+                    <option value="🍔 Food">🍔 Food</option>
+                    <option value="🚗 Transport">🚗 Transport</option>
+                    <option value="🛍️ Shopping">🛍️ Shopping</option>
+                    <option value="💡 Bills">💡 Bills</option>
+                    <option value="🎬 Entertainment">🎬 Entertainment</option>
+                    <option value="🏠 Home">🏠 Home</option>
+                    <option value="💊 Health">💊 Health</option>
+                    <option value="✈️ Travel">✈️ Travel</option>
+                    <option value="📱 Mobile">📱 Mobile</option>
+                    <option value="🎁 Gifts">🎁 Gifts</option>
+                    <option value="📚 Education">📚 Education</option>
+                    <option value="🔧 Other">🔧 Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">📝 Description</label>
+                <input type="text" id="description" placeholder="e.g., Dinner at Restaurant">
+            </div>
+            
+            <button onclick="addExpense()">💾 Save Expense</button>
+        </div>
+        
+        <!-- VIEW EXPENSES TAB -->
+        <div id="view" class="tab-content">
+            <div class="form-group">
+                <label for="filter-month">🗓️ Filter by Month</label>
+                <input type="month" id="filter-month" onchange="filterExpenses()">
+            </div>
+            
+            <table id="expenses-table">
+                <thead>
+                    <tr>
+                        <th>📅 Date</th>
+                        <th>💵 Amount</th>
+                        <th>🗂️ Category</th>
+                        <th>📝 Description</th>
+                        <th>❌ Action</th>
+                    </tr>
+                </thead>
+                <tbody id="expenses-list">
+                    <!-- Expenses will load here -->
+                </tbody>
+            </table>
+            
+            <div class="total">
+                🏦 Total: ₹<span id="total-amount">0.00</span>
+            </div>
+        </div>
+        
+        <!-- INVOICE TAB -->
+        <div id="invoice" class="tab-content">
+            <div class="form-group">
+                <label for="invoice-month">📅 Select Month</label>
+                <input type="month" id="invoice-month" required>
+                <button onclick="generateInvoice()">🖨️ Generate Invoice</button>
+            </div>
+            
+            <div id="invoice-preview" class="invoice" style="display: none;">
+                <div class="invoice-header">
+                    <h2>📑 Expense Invoice</h2>
+                    <h3 id="invoice-month-title">January 2023</h3>
+                </div>
+                
+                <table class="invoice-table">
+                    <thead>
+                        <tr>
+                            <th>📅 Date</th>
+                            <th>📝 Description</th>
+                            <th>🗂️ Category</th>
+                            <th>💵 Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoice-items">
+                        <!-- Invoice items will load here -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3" style="text-align: right;">Total:</th>
+                            <th id="invoice-total">₹0.00</th>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+                <button class="print-btn" onclick="window.print()">🖨️ Print Invoice</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ✅ Initialize expenses from localStorage (FIXED BUG)
+        let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+        
+        // Set default date to today
+        document.getElementById('date').valueAsDate = new Date();
+        
+        // 🟢 ADD EXPENSE FUNCTION
+        function addExpense() {
+            const date = document.getElementById('date').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const category = document.getElementById('category').value;
+            const description = document.getElementById('description').value;
+            
+            if (!date || isNaN(amount) || !category) {
+                alert('⚠️ Please fill all required fields!');
+                return;
+            }
+            
+            const expense = {
+                id: Date.now(), // Unique ID
+                date: date,
+                amount: amount,
+                category: category,
+                description: description
+            };
+            
+            expenses.push(expense);
+            saveExpenses();
+            renderExpenses();
+            
+            // Reset form
+            document.getElementById('amount').value = '';
+            document.getElementById('category').value = '';
+            document.getElementById('description').value = '';
+            
+            // Show success message
+            alert('✅ Expense saved successfully!');
+        }
+        
+        // 💾 SAVE TO LOCALSTORAGE (FIXED BUG)
+        function saveExpenses() {
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+        }
+        
+        // 📜 RENDER EXPENSES IN TABLE
+        function renderExpenses(filteredExpenses = null) {
+            const expensesToRender = filteredExpenses || expenses;
+            const expensesList = document.getElementById('expenses-list');
+            expensesList.innerHTML = '';
+            
+            let total = 0;
+            
+            if (expensesToRender.length === 0) {
+                expensesList.innerHTML = `<tr><td colspan="5" style="text-align: center;">No expenses found</td></tr>`;
+            } else {
+                expensesToRender.forEach(expense => {
+                    total += expense.amount;
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${formatDate(expense.date)}</td>
+                        <td>₹${expense.amount.toFixed(2)}</td>
+                        <td>${expense.category}</td>
+                        <td>${expense.description || '-'}</td>
+                        <td>
+                            <button onclick="deleteExpense(${expense.id})" class="btn-danger">❌ Delete</button>
+                        </td>
+                    `;
+                    expensesList.appendChild(row);
+                });
+            }
+            
+            document.getElementById('total-amount').textContent = total.toFixed(2);
+        }
+        
+        // ❌ DELETE EXPENSE
+        function deleteExpense(id) {
+            if (confirm('⚠️ Delete this expense?')) {
+                expenses = expenses.filter(expense => expense.id !== id);
+                saveExpenses();
+                renderExpenses();
+                alert('🗑️ Expense deleted!');
+            }
+        }
+        
+        // 🔍 FILTER EXPENSES BY MONTH
+        function filterExpenses() {
+            const month = document.getElementById('filter-month').value;
+            if (!month) {
+                renderExpenses();
+                return;
+            }
+            
+            const filteredExpenses = expenses.filter(expense => {
+                return expense.date.startsWith(month);
+            });
+            
+            renderExpenses(filteredExpenses);
+        }
+        
+        // 🧾 GENERATE INVOICE (FIXED BUG)
+        function generateInvoice() {
+            const month = document.getElementById('invoice-month').value;
+            if (!month) {
+                alert('⚠️ Please select a month!');
+                return;
+            }
+            
+            const filteredExpenses = expenses.filter(expense => {
+                return expense.date.startsWith(month);
+            });
+            
+            if (filteredExpenses.length === 0) {
+                alert('⚠️ No expenses found for this month!');
+                return;
+            }
+            
+            const invoiceItems = document.getElementById('invoice-items');
+            invoiceItems.innerHTML = '';
+            
+            let total = 0;
+            
+            filteredExpenses.forEach(expense => {
+                total += expense.amount;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${formatDate(expense.date)}</td>
+                    <td>${expense.description || '-'}</td>
+                    <td>${expense.category}</td>
+                    <td>₹${expense.amount.toFixed(2)}</td>
+                `;
+                invoiceItems.appendChild(row);
+            });
+            
+            document.getElementById('invoice-total').textContent = `₹${total.toFixed(2)}`;
+            
+            // Set invoice title (e.g., "January 2023")
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+                               'August', 'September', 'October', 'November', 'December'];
+            const year = month.substring(0, 4);
+            const monthNum = parseInt(month.substring(5, 7)) - 1;
+            document.getElementById('invoice-month-title').textContent = `${monthNames[monthNum]} ${year}`;
+            
+            // Show invoice preview
+            document.getElementById('invoice-preview').style.display = 'block';
+        }
+        
+        // 📅 FORMAT DATE (e.g., "20 Jan 2023")
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('en-IN', options);
+        }
+        
+        // 🔄 SWITCH TABS
+        function openTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            // If "View Expenses" tab is opened, render them
+            if (tabName === 'view') {
+                renderExpenses();
+            }
+        }
+        
+        // 🚀 INITIAL LOAD
+        renderExpenses();
+    </script>
+</body>
+</html>
